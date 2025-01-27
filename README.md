@@ -53,10 +53,7 @@ FocusBar/
 ├── content.js          # Script injected into webpages for bar functionality
 ├── background.js       # Background script (currently minimal use)
 ├── icons/              # Icons for the extension
-│   ├── icon16.png
-│   ├── icon32.png
-│   ├── icon48.png
-│   ├── icon128.png
+│   ├── icon.png
 ```
 
 ---
