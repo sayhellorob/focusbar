@@ -63,7 +63,7 @@ FocusBar/
 
 ## Privacy Policy
 
-FocusBar does not collect, store, or transmit any personal or browsing data. All functionality is performed locally within your browser. For more details, view the full [Privacy Policy](https://docs.google.com/document/d/YOUR_DOCUMENT_ID/preview).
+FocusBar does not collect, store, or transmit any personal or browsing data. All functionality is performed locally within your browser. For more details, view the full [Privacy Policy](https://docs.google.com/document/d/1owDSayXOdx6NLMEt2vyVJn7yBLzDv-yFm1OrewsPV5I/edit?usp=sharing).
 
 ---
 
