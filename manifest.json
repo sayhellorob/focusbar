@@ -13,8 +13,6 @@
       "128": "icons/icon.png"
     },
     "default_title": "FocusBar"
-  },
-  "background": {
-    "service_worker": "background.js"
+  }
   }
 }
