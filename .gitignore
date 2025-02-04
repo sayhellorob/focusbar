@@ -1,0 +1,63 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS Thumbnail & Resource Forks
+Icon?
+._*
+
+# Node.js dependencies (if using npm or yarn)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Chrome Extension build artifacts
+dist/
+build/
+*.crx
+*.pem
+*.zip
+*.xpi
+
+# Chrome Extension local storage files
+localStorage/
+sessionStorage/
+*.log
+
+# Environment & API Keys (avoid committing sensitive info)
+.env
+.env.local
+.env.development
+.env.production
+config.json
+secrets.json
+apikeys.json
+
+# Temporary or generated files
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# VS Code settings (optional)
+.vscode/
+.history/
+
+# Ignore specific browser storage files
+chrome-profile/
+chrome-extension-profile/
+
+# If using Webpack, ignore output directory
+webpack-stats.json
+.cache/
+.parcel-cache/
+
+# If using Firebase
+firebase-debug.log
+firebase.json
+firestore.rules
+firestore.indexes.json
+
+# Ignore Replit files (if using Replit for development)
+.replit
