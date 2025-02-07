@@ -10,6 +10,8 @@ FocusBar is a lightweight Chrome extension designed to enhance your browsing exp
 - **On-Demand Activation**: The extension operates only when triggered by the user.
 - **Drag-and-Drop Functionality**: Move the bar vertically across the page as needed.
 - **Height Adjustment**: Resize the bar to suit your preferences.
+- **Opacity Adjustment**: Change the transparency of the highlight bar using a slider.
+- **Color Picker**: Customize the color of the highlight bar.
 - **Close Button**: Quickly toggle off the highlight bar with a user-friendly close button.
 - **Lightweight Design**: FocusBar runs entirely locally within your browser, ensuring minimal resource usage.
 - **Privacy-First**: No data collection, tracking, or external API calls.
@@ -20,16 +22,19 @@ FocusBar is a lightweight Chrome extension designed to enhance your browsing exp
 
 1. Install the extension from the Chrome Web Store (or load it locally for development).
 2. Click the extension icon in the browser toolbar to open the popup.
-3. Click the **Toggle Highlight Bar** button to activate the bar.
-4. Use drag-and-drop or resizing to adjust the bar to your desired position and size.
-5. Hover over the bar to reveal the close button and disable it as needed.
+3. Click the **Toggle Bar** button to activate the highlight bar.
+4. Use drag-and-drop to move the bar vertically across the page.
+5. Adjust the height of the bar by dragging the resize handle at the bottom.
+6. Change the transparency of the bar using the opacity slider.
+7. Customize the color of the bar using the color picker.
+8. Hover over the bar to reveal the close button and disable it as needed.
 
 ---
 
 ## Installation
 
 ### From the Chrome Web Store
-Coming soon!
+- https://chromewebstore.google.com/detail/focusbar/gionniolflkjaefibllhfkifmbbjfcan
 
 ### For Development
 1. Clone this repository:
@@ -51,7 +56,6 @@ FocusBar/
 ├── popup.html          # Popup UI
 ├── popup.js            # Logic for popup interactions
 ├── content.js          # Script injected into webpages for bar functionality
-├── background.js       # Background script (currently minimal use)
 ├── icons/              # Icons for the extension
 │   ├── icon.png
 ```
