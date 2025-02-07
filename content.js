@@ -11,15 +11,24 @@ function toggleHighlightBar() {
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mousemove', onResize);
     document.removeEventListener('mouseup', stopDragOrResize);
+    localStorage.removeItem('highlightBarVisible'); // Mark as removed
   } else {
+    console.log("Creating highlight bar...");
+
+    // Retrieve stored values
+    const savedTop = localStorage.getItem('highlightBarTop') || '0px';
+    const savedHeight = localStorage.getItem('highlightBarHeight') || '100px';
+    const savedColor = localStorage.getItem('highlightBarHexColor') || '#ffff00';
+    const savedOpacity = localStorage.getItem('highlightBarOpacity') || '0.4';
+
     // Create the highlight bar
     highlightBar = document.createElement('div');
     highlightBar.style.position = 'fixed';
-    highlightBar.style.top = '0';
+    highlightBar.style.top = savedTop;
     highlightBar.style.left = '0';
     highlightBar.style.width = '100%';
-    highlightBar.style.height = '100px'; // Default height
-    highlightBar.style.backgroundColor = 'rgba(255, 255, 0, 0.4)';
+    highlightBar.style.height = savedHeight;
+    highlightBar.style.backgroundColor = `rgba(${hexToRGB(savedColor)}, ${savedOpacity})`;
     highlightBar.style.pointerEvents = 'auto';
     highlightBar.style.cursor = 'grab';
     highlightBar.style.zIndex = '9999';
@@ -28,6 +37,9 @@ function toggleHighlightBar() {
     highlightBar.style.alignItems = 'center';
     highlightBar.style.paddingRight = '10px';
     highlightBar.style.boxSizing = 'border-box';
+
+    // Save visibility state
+    localStorage.setItem('highlightBarVisible', 'true');
 
     // Add a close button
     const closeButton = document.createElement('button');
@@ -39,14 +51,54 @@ function toggleHighlightBar() {
     closeButton.style.width = '30px';
     closeButton.style.height = '30px';
     closeButton.style.cursor = 'pointer';
-    closeButton.style.display = 'flex';
-    closeButton.style.justifyContent = 'center';
-    closeButton.style.alignItems = 'center';
-    closeButton.style.marginRight = '5px';
-    closeButton.style.transition = 'opacity 0.3s'; // Smooth transition for hiding/showing
+    closeButton.style.marginRight = '10px';
     highlightBar.appendChild(closeButton);
 
-    // Add a handle for resizing
+    // Close functionality
+    closeButton.addEventListener('click', () => {
+      highlightBar.remove();
+      highlightBar = null;
+      localStorage.removeItem('highlightBarVisible');
+    });
+
+    // Add transparency slider
+    const opacitySlider = document.createElement('input');
+    opacitySlider.type = 'range';
+    opacitySlider.min = '0.1';
+    opacitySlider.max = '1';
+    opacitySlider.step = '0.05';
+    opacitySlider.value = savedOpacity;
+    opacitySlider.style.cursor = 'pointer';
+    opacitySlider.style.transition = 'opacity 0.3s';
+    opacitySlider.style.marginRight = '10px';
+
+    opacitySlider.addEventListener('input', () => {
+      highlightBar.style.backgroundColor = `rgba(${hexToRGB(colorPicker.value)}, ${opacitySlider.value})`;
+      localStorage.setItem('highlightBarOpacity', opacitySlider.value);
+    });
+
+    highlightBar.appendChild(opacitySlider);
+
+    // Add color picker
+    const colorPicker = document.createElement('input');
+    colorPicker.type = 'color';
+    colorPicker.value = savedColor;
+    colorPicker.style.cursor = 'pointer';
+    colorPicker.style.transition = 'opacity 0.3s';
+    colorPicker.style.marginLeft = '10px';
+    colorPicker.style.width = '30px';
+    colorPicker.style.height = '30px';
+    colorPicker.style.border = 'none';
+    colorPicker.style.borderRadius = '50%';
+
+    colorPicker.addEventListener('input', () => {
+      highlightBar.style.backgroundColor = `rgba(${hexToRGB(colorPicker.value)}, ${opacitySlider.value})`;
+      localStorage.setItem('highlightBarHexColor', colorPicker.value);
+    });
+
+    highlightBar.appendChild(colorPicker);
+
+    // Add resizing handle
     const resizeHandle = document.createElement('div');
     resizeHandle.style.position = 'absolute';
     resizeHandle.style.bottom = '0';
@@ -54,41 +106,35 @@ function toggleHighlightBar() {
     resizeHandle.style.width = '100%';
     resizeHandle.style.height = '10px';
     resizeHandle.style.cursor = 'ns-resize';
-    resizeHandle.style.backgroundColor = 'rgba(0, 0, 0, 0.1)'; // Slightly visible handle
+    resizeHandle.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
     highlightBar.appendChild(resizeHandle);
 
     document.body.appendChild(highlightBar);
 
-    // Add event listeners for dragging and resizing
+    // Attach event listeners for drag and resize
     highlightBar.addEventListener('mousedown', startDrag);
     resizeHandle.addEventListener('mousedown', startResize);
 
-    // Add functionality to hide the close button after a few seconds
-    setTimeout(() => {
-      closeButton.style.opacity = '0'; // Hide the button
-    }, 3000); // 3 seconds
-
-    // Show the button when the bar is hovered
+    // Show controls when the bar is hovered
     highlightBar.addEventListener('mouseover', () => {
-      closeButton.style.opacity = '1'; // Show the button
+      closeButton.style.opacity = '1';
+      opacitySlider.style.opacity = '1';
+      colorPicker.style.opacity = '1';
     });
 
-    // Hide the button when the mouse leaves the bar
+    // Hide controls when the mouse leaves the bar
     highlightBar.addEventListener('mouseout', () => {
-      closeButton.style.opacity = '0'; // Hide the button
+      closeButton.style.opacity = '0';
+      opacitySlider.style.opacity = '0';
+      colorPicker.style.opacity = '0';
     });
 
-    // Close functionality
-    closeButton.addEventListener('click', () => {
-      highlightBar.remove();
-      highlightBar = null;
-    });
   }
 }
 
 // Start drag handler
 function startDrag(event) {
-  if (event.target !== highlightBar) return; // Prevent dragging when resizing
+  if (event.target !== highlightBar) return;
   isDragging = true;
   offsetY = event.clientY - highlightBar.getBoundingClientRect().top;
   highlightBar.style.cursor = 'grabbing';
@@ -100,7 +146,10 @@ function startDrag(event) {
 function onDrag(event) {
   if (!isDragging) return;
   const newTop = event.clientY - offsetY;
-  highlightBar.style.top = `${newTop}px`; // Update the position dynamically
+  highlightBar.style.top = `${newTop}px`;
+
+  // Save position in localStorage
+  localStorage.setItem('highlightBarTop', `${newTop}px`);
 }
 
 // Start resize handler
@@ -115,9 +164,12 @@ function startResize(event) {
 function onResize(event) {
   if (!isResizing) return;
   const newHeight = highlightBar.getBoundingClientRect().height + (event.clientY - offsetY);
-  if (newHeight > 20) { // Prevent collapsing too much
+  if (newHeight > 20) {
     highlightBar.style.height = `${newHeight}px`;
     offsetY = event.clientY;
+
+    // Save new height in localStorage
+    localStorage.setItem('highlightBarHeight', `${newHeight}px`);
   }
 }
 
@@ -133,17 +185,25 @@ function stopDragOrResize() {
 
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('Message received in content script:', message);
-    console.log('Message sender:', sender);
-  
-    if (message.action === 'toggleHighlightBar') {
-      try {
-        toggleHighlightBar();
-        sendResponse({ status: 'Highlight bar toggled' });
-      } catch (error) {
-        console.error('Error toggling highlight bar:', error.message);
-        sendResponse({ status: 'Error', message: error.message });
-      }
-    }
-  });
-  
+  console.log('Message received in content script:', message);
+
+  if (message.action === 'toggleHighlightBar') {
+    toggleHighlightBar();
+    sendResponse({ status: 'Highlight bar toggled' });
+  }
+});
+
+// Utility function to convert HEX to RGB
+function hexToRGB(hex) {
+  let r = parseInt(hex.slice(1, 3), 16);
+  let g = parseInt(hex.slice(3, 5), 16);
+  let b = parseInt(hex.slice(5, 7), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+// Restore bar visibility if it was active before
+document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem('highlightBarVisible') === 'true') {
+    toggleHighlightBar();
+  }
+});
