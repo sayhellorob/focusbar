@@ -15,6 +15,7 @@ FocusBar is a lightweight Chrome extension designed to enhance your browsing exp
 - **Close Button**: Quickly toggle off the highlight bar with a user-friendly close button.
 - **Lightweight Design**: FocusBar runs entirely locally within your browser, ensuring minimal resource usage.
 - **Privacy-First**: No data collection, tracking, or external API calls.
+- **Caching Settings**: Automatically saves the position, height, color, and opacity of the highlight bar for future use.
 
 ---
 
@@ -28,6 +29,8 @@ FocusBar is a lightweight Chrome extension designed to enhance your browsing exp
 6. Change the transparency of the bar using the opacity slider.
 7. Customize the color of the bar using the color picker.
 8. Hover over the bar to reveal the close button and disable it as needed.
+9. The extension automatically saves the bar's settings (position, height, color, and opacity) for future use.
+
 
 ---
 
