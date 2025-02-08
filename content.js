@@ -11,6 +11,7 @@ function toggleHighlightBar() {
     document.removeEventListener('mousemove', onDrag);
     document.removeEventListener('mousemove', onResize);
     document.removeEventListener('mouseup', stopDragOrResize);
+    window.removeEventListener('resize', onWindowResize);
     localStorage.removeItem('highlightBarVisible'); // Mark as removed
   } else {
     console.log("Creating highlight bar...");
@@ -129,6 +130,25 @@ function toggleHighlightBar() {
       colorPicker.style.opacity = '0';
     });
 
+    // Add resize event listener to adjust bar position on screen change
+    window.addEventListener('resize', onWindowResize);
+
+    ensureBarIsVisible(highlightBar);
+  }
+}
+
+function ensureBarIsVisible(bar) {
+  const barRect = bar.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+
+  if (barRect.bottom > viewportHeight) {
+    bar.style.top = `${viewportHeight - barRect.height}px`;
+  }
+}
+
+function onWindowResize() {
+  if (highlightBar) {
+    ensureBarIsVisible(highlightBar);
   }
 }
 
