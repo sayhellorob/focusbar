@@ -44,7 +44,7 @@ function toggleHighlightBar() {
 
     // Add a close button
     const closeButton = document.createElement('button');
-    closeButton.textContent = 'X';
+    closeButton.textContent = 'x';
     closeButton.style.backgroundColor = 'red';
     closeButton.style.color = 'white';
     closeButton.style.border = 'none';
@@ -86,11 +86,11 @@ function toggleHighlightBar() {
     colorPicker.value = savedColor;
     colorPicker.style.cursor = 'pointer';
     colorPicker.style.transition = 'opacity 0.3s';
-    colorPicker.style.marginLeft = '10px';
-    colorPicker.style.width = '30px';
-    colorPicker.style.height = '30px';
+    colorPicker.style.marginLeft = '1px';
+    colorPicker.style.width = '20px';
+    colorPicker.style.height = '20px';
     colorPicker.style.border = 'none';
-    colorPicker.style.borderRadius = '50%';
+    colorPicker.style.borderRadius = '0%';
 
     colorPicker.addEventListener('input', () => {
       highlightBar.style.backgroundColor = `rgba(${hexToRGB(colorPicker.value)}, ${opacitySlider.value})`;
@@ -110,6 +110,32 @@ function toggleHighlightBar() {
     resizeHandle.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
     highlightBar.appendChild(resizeHandle);
 
+    // Add reset icon
+    const resetIcon = document.createElement('div');
+    resetIcon.style.width = '30px';
+    resetIcon.style.height = '30px';
+    resetIcon.style.cursor = 'pointer';
+    resetIcon.style.marginLeft = '10px';
+    resetIcon.style.border = '0px solid #333'; // Add border for visibility
+    resetIcon.style.display = 'flex';
+    resetIcon.style.alignItems = 'center';
+    resetIcon.style.justifyContent = 'center';
+    resetIcon.style.color = '#333';
+    resetIcon.style.fontSize = '20px';
+    resetIcon.textContent = '↺'; // Unicode character for reset
+    highlightBar.appendChild(resetIcon);
+
+    // Reset functionality
+    resetIcon.addEventListener('click', () => {
+      localStorage.removeItem('highlightBarTop');
+      localStorage.removeItem('highlightBarHeight');
+      localStorage.removeItem('highlightBarHexColor');
+      localStorage.removeItem('highlightBarOpacity');
+      highlightBar.style.top = '0px';
+      highlightBar.style.height = '100px';
+      highlightBar.style.backgroundColor = 'rgba(255, 255, 0, 0.4)';
+    });
+
     document.body.appendChild(highlightBar);
 
     // Attach event listeners for drag and resize
@@ -121,6 +147,7 @@ function toggleHighlightBar() {
       closeButton.style.opacity = '1';
       opacitySlider.style.opacity = '1';
       colorPicker.style.opacity = '1';
+      resetIcon.style.opacity = '1';
     });
 
     // Hide controls when the mouse leaves the bar
@@ -128,6 +155,7 @@ function toggleHighlightBar() {
       closeButton.style.opacity = '0';
       opacitySlider.style.opacity = '0';
       colorPicker.style.opacity = '0';
+      resetIcon.style.opacity = '0';
     });
 
     // Add resize event listener to adjust bar position on screen change
