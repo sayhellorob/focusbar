@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "FocusBar",
-  "version": "1.1.1",
-  "description": "Adds a static color bar overlay that highlights elements of a page as you scroll.",
+  "name": "__MSG_extensionName__",
+  "version": "1.1.2",
+  "description": "__MSG_extensionDescription__",
   "permissions": ["activeTab", "scripting"],
+  "default_locale": "es",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

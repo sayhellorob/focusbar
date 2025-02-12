@@ -1,6 +1,15 @@
 document.getElementById('toggle-bar').addEventListener('click', async () => {
   console.log('Button clicked in popup...');
 
+  const showError = (messageKey) => {
+    const errorMessage = document.getElementById('error-message');
+    errorMessage.textContent = chrome.i18n.getMessage(messageKey);
+    errorMessage.classList.add('show');
+    setTimeout(() => {
+      errorMessage.classList.remove('show');
+    }, 3000); // Hide after 3 seconds
+  };
+
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
@@ -8,6 +17,7 @@ document.getElementById('toggle-bar').addEventListener('click', async () => {
 
     if (!tab || !tab.id || !tab.url || !tab.url.startsWith('http')) {
       console.error('Invalid or unsupported tab:', tab);
+      showError('errorMessage');
       return;
     }
 
@@ -40,5 +50,6 @@ document.getElementById('toggle-bar').addEventListener('click', async () => {
     );
   } catch (error) {
     console.error('Error querying tabs or injecting script:', error.message);
+    showError('errorMessage');
   }
 });

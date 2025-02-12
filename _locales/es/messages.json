@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "FocusBar"
+  },
+  "extensionDescription": {
+    "message": "Agrega una barra de color estática que resalta elementos de una página a medida que te desplazas."
+  },
+  "toggleBar": {
+    "message": "FocusBar"
+  },
+  "errorMessage": {
+    "message": "La barra solo funciona en páginas web."
+  }
+}

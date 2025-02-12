@@ -134,6 +134,8 @@ function toggleHighlightBar() {
       highlightBar.style.top = '0px';
       highlightBar.style.height = '100px';
       highlightBar.style.backgroundColor = 'rgba(255, 255, 0, 0.4)';
+      colorPicker.value = '#ffff00'; // Reset color picker value
+      opacitySlider.value = '0.4'; // Reset opacity slider value
     });
 
     document.body.appendChild(highlightBar);

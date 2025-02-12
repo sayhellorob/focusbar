@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "FocusBar"
+  },
+  "extensionDescription": {
+    "message": "Adds a static color bar overlay that highlights elements of a page as you scroll."
+  },
+  "toggleBar": {
+    "message": "FocusBar"
+  },
+  "errorMessage": {
+    "message": "Bar only works on web pages."
+  }
+}
