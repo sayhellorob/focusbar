@@ -4,7 +4,7 @@
   "version": "1.1.2",
   "description": "__MSG_extensionDescription__",
   "permissions": ["activeTab", "scripting"],
-  "default_locale": "es",
+  "default_locale": "en",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

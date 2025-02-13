@@ -142,13 +142,5 @@
   <a href="https://chromewebstore.google.com/detail/focusbar/gionniolflkjaefibllhfkifmbbjfcan" target="_blank" class="info-icon"></a>
   <div class="error-message" id="error-message" data-i18n="errorMessage">Bar only works on web pages.</div>
   <script src="popup.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const messageKey = el.getAttribute('data-i18n');
-        el.textContent = chrome.i18n.getMessage(messageKey);
-      });
-    });
-  </script>
 </body>
 </html>

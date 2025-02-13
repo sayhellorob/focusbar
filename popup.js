@@ -1,3 +1,10 @@
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const messageKey = el.getAttribute('data-i18n');
+    el.textContent = chrome.i18n.getMessage(messageKey);
+  });
+});
+
 document.getElementById('toggle-bar').addEventListener('click', async () => {
   console.log('Button clicked in popup...');
 
