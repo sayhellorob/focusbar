@@ -3,7 +3,7 @@
   "name": "__MSG_extensionName__",
   "version": "1.1.2",
   "description": "__MSG_extensionDescription__",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage"],
   "default_locale": "en",
   "action": {
     "default_popup": "popup.html",

@@ -1,26 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const messageKey = el.getAttribute('data-i18n');
-    el.textContent = chrome.i18n.getMessage(messageKey);
+    el.textContent = chrome.i18n.getMessage(messageKey) || messageKey;
   });
 });
 
-document.getElementById('toggle-bar').addEventListener('click', async () => {
+document.getElementById('toggle-btn').addEventListener('click', async () => {
   console.log('Button clicked in popup...');
 
   const showError = (messageKey) => {
     const errorMessage = document.getElementById('error-message');
-    errorMessage.textContent = chrome.i18n.getMessage(messageKey);
+    errorMessage.textContent = chrome.i18n.getMessage(messageKey) || "Error occurred";
     errorMessage.classList.add('show');
     setTimeout(() => {
       errorMessage.classList.remove('show');
-    }, 3000); // Hide after 3 seconds
+    }, 3000);
   };
 
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-    console.log('Active tab:', tab);
 
     if (!tab || !tab.id || !tab.url || !tab.url.startsWith('http')) {
       console.error('Invalid or unsupported tab:', tab);
@@ -28,33 +26,46 @@ document.getElementById('toggle-bar').addEventListener('click', async () => {
       return;
     }
 
-    console.log('Checking if content script is already injected...');
-
-    // Inject the content script if it's not already loaded
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tab.id },
-        files: ['content.js']
-      },
-      () => {
+    // Function to toggle the bar
+    const toggleBar = () => {
+      chrome.tabs.sendMessage(tab.id, { action: 'toggleHighlightBar' }, (response) => {
         if (chrome.runtime.lastError) {
-          console.error('Error injecting content script:', chrome.runtime.lastError.message);
+          console.error('Error sending message:', chrome.runtime.lastError.message);
         } else {
-          console.log('Content script injected. Sending toggle message...');
-
-          // Ensure a slight delay before sending the message to let the script initialize
-          setTimeout(() => {
-            chrome.tabs.sendMessage(tab.id, { action: 'toggleHighlightBar' }, (response) => {
-              if (chrome.runtime.lastError) {
-                console.error('Error sending message:', chrome.runtime.lastError.message);
-              } else {
-                console.log('Response from content script:', response);
-              }
-            });
-          }, 100); // 100ms delay to ensure script is ready
+          console.log('Response from content script:', response);
+          window.close(); // Optional: close popup after action
         }
+      });
+    };
+
+    // Check if script is already injected
+    chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response) => {
+      if (chrome.runtime.lastError) {
+        // Script not injected, inject it now
+        console.log('Script not injected, injecting now...');
+        chrome.scripting.executeScript(
+          {
+            target: { tabId: tab.id },
+            files: ['content.js']
+          },
+          () => {
+            if (chrome.runtime.lastError) {
+              console.error('Error injecting content script:', chrome.runtime.lastError.message);
+              showError('errorMessage');
+            } else {
+              console.log('Content script injected. Toggling bar...');
+              // Add a small delay to ensure script is ready
+              setTimeout(toggleBar, 100);
+            }
+          }
+        );
+      } else {
+        // Script already injected, just toggle
+        console.log('Script already injected. Toggling bar...');
+        toggleBar();
       }
-    );
+    });
+
   } catch (error) {
     console.error('Error querying tabs or injecting script:', error.message);
     showError('errorMessage');

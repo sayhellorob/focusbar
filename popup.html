@@ -135,10 +135,17 @@
   </style>
 </head>
 <body>
-  <div class="title-container" id="toggle-bar">
+  <div class="title-container">
     <h1 data-i18n="toggleBar">FocusBar</h1>
   </div>
-  <!--<div class="hover-label" id="hover-label">[activate bar]</div>-->
+  
+  <div class="toggle-container">
+    <button id="toggle-btn">
+      <div class="toggle-icon"></div>
+      <span id="toggle-text">Toggle Bar</span>
+    </button>
+  </div>
+
   <a href="https://chromewebstore.google.com/detail/focusbar/gionniolflkjaefibllhfkifmbbjfcan" target="_blank" class="info-icon"></a>
   <div class="error-message" id="error-message" data-i18n="errorMessage">Bar only works on web pages.</div>
   <script src="popup.js"></script>
