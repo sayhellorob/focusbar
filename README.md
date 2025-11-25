@@ -14,6 +14,10 @@ FocusBar is a Chrome extension designed to help you focus on reading by highligh
 
 ## Installation
 
+### From Chrome Web Store (Recommended)
+[**Install FocusBar**](https://chromewebstore.google.com/detail/focusbar/gionniolflkjaefibllhfkifmbbjfcan)
+
+### Manual Installation (Developer)
 1.  Clone this repository:
     ```bash
     git clone https://github.com/sayhellorob/focusbar.git
