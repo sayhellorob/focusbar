@@ -307,6 +307,7 @@ function createHighlightBar() {
     highlightBarHexColor: '#ffff00',
     highlightBarOpacity: '0.4',
     focusModeActive: false,
+    focusModeOpacity: '0.5',
     autoScrollActive: false,
     scrollSpeed: 1
   }, (items) => {
@@ -333,7 +334,7 @@ function createHighlightBar() {
 
     // Apply Focus Mode if active
     if (items.focusModeActive) {
-      highlightBar.style.boxShadow = '0 0 0 9999px rgba(0, 0, 0, 0.5)';
+      highlightBar.style.boxShadow = `0 0 0 9999px rgba(0, 0, 0, ${items.focusModeOpacity})`;
     }
 
     // Apply Auto-Scroll if active
@@ -432,18 +433,42 @@ function createHighlightBar() {
     focusButton.innerHTML = items.focusModeActive ? ICONS.focus : ICONS.focusOff;
     focusButton.title = "Toggle Focus Mode";
 
+    // 5b. Focus Dim Slider
+    const focusDimSlider = document.createElement('input');
+    focusDimSlider.type = 'range';
+    focusDimSlider.className = 'focusbar-slider';
+    focusDimSlider.min = '0.1';
+    focusDimSlider.max = '1';
+    focusDimSlider.step = '0.1';
+    focusDimSlider.value = items.focusModeOpacity;
+    focusDimSlider.title = "Adjust Background Dimness";
+    focusDimSlider.style.width = '60px'; // Slightly smaller
+    focusDimSlider.style.display = items.focusModeActive ? 'block' : 'none'; // Only show when active
+
     focusButton.addEventListener('click', () => {
-      chrome.storage.sync.get(['focusModeActive'], (result) => {
+      chrome.storage.sync.get(['focusModeActive', 'focusModeOpacity'], (result) => {
         const newState = !result.focusModeActive;
+        const currentOpacity = result.focusModeOpacity || '0.5';
         chrome.storage.sync.set({ focusModeActive: newState });
 
         if (newState) {
-          highlightBar.style.boxShadow = '0 0 0 9999px rgba(0, 0, 0, 0.5)';
+          highlightBar.style.boxShadow = `0 0 0 9999px rgba(0, 0, 0, ${currentOpacity})`;
           focusButton.innerHTML = ICONS.focus;
+          focusDimSlider.style.display = 'block';
         } else {
           highlightBar.style.boxShadow = 'none';
           focusButton.innerHTML = ICONS.focusOff;
+          focusDimSlider.style.display = 'none';
         }
+      });
+    });
+
+    focusDimSlider.addEventListener('input', () => {
+      chrome.storage.sync.get(['focusModeActive'], (result) => {
+        if (result.focusModeActive) {
+          highlightBar.style.boxShadow = `0 0 0 9999px rgba(0, 0, 0, ${focusDimSlider.value})`;
+        }
+        chrome.storage.sync.set({ focusModeOpacity: focusDimSlider.value });
       });
     });
 
@@ -454,7 +479,7 @@ function createHighlightBar() {
     resetButton.title = "Reset Settings";
 
     resetButton.addEventListener('click', () => {
-      chrome.storage.sync.remove(['highlightBarTop', 'highlightBarHeight', 'highlightBarHexColor', 'highlightBarOpacity', 'focusModeActive', 'autoScrollActive', 'scrollSpeed'], () => {
+      chrome.storage.sync.remove(['highlightBarTop', 'highlightBarHeight', 'highlightBarHexColor', 'highlightBarOpacity', 'focusModeActive', 'focusModeOpacity', 'autoScrollActive', 'scrollSpeed'], () => {
         highlightBar.style.top = '0px';
         highlightBar.style.height = '100px';
         highlightBar.style.backgroundColor = 'rgba(255, 255, 0, 0.4)';
@@ -462,6 +487,8 @@ function createHighlightBar() {
         colorPicker.value = '#ffff00';
         opacitySlider.value = '0.4';
         focusButton.innerHTML = ICONS.focusOff;
+        focusDimSlider.value = '0.5';
+        focusDimSlider.style.display = 'none';
         stopAutoScroll();
         scrollButton.innerHTML = ICONS.play;
         speedButton.innerHTML = `<span style="font-size:10px; font-weight:bold;">1x</span>`;
@@ -484,6 +511,7 @@ function createHighlightBar() {
     toolbar.appendChild(scrollButton);
     toolbar.appendChild(speedButton);
     toolbar.appendChild(focusButton);
+    toolbar.appendChild(focusDimSlider);
     toolbar.appendChild(resetButton);
     toolbar.appendChild(closeButton);
 
