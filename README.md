@@ -4,13 +4,19 @@ FocusBar is a Chrome extension designed to help you focus on reading by highligh
 
 ## Features
 
-*   **Focus Highlight**: Isolate text to reduce distractions.
+*   **Focus Mode**: Dim the rest of the page to highlight only the bar area.
+*   **Auto-Scroll**: Automatically scroll the page at adjustable speeds (Teleprompter mode).
 *   **Draggable & Resizable**: Move the bar anywhere and adjust its height to fit your reading style.
 *   **Customizable**:
     *   **Color**: Choose any color for the highlight.
-    *   **Opacity**: Adjust transparency to your liking.
+    *   **Opacity**: Adjust bar transparency.
+    *   **Dim Level**: Adjust background darkness in Focus Mode (from light dim to pitch black).
 *   **Global Settings**: Your preferences are saved via `chrome.storage.sync`, so they persist across all websites and devices.
-*   **Modern UI**: Sleek, floating toolbar with intuitive controls.
+*   **Keyboard Shortcuts**:
+    *   `Alt+Shift+F`: Toggle FocusBar
+    *   `Escape`: Close FocusBar
+    *   `Arrow Up/Down`: Move Bar
+    *   `Shift + Arrow Up/Down`: Resize Bar
 
 ## Installation
 
@@ -29,14 +35,18 @@ FocusBar is a Chrome extension designed to help you focus on reading by highligh
 
 ## Usage
 
-1.  **Activate**: Click the FocusBar extension icon in your browser toolbar to toggle the bar ON/OFF.
+1.  **Activate**: Click the FocusBar extension icon (or use `Alt+Shift+F`) to toggle the bar.
 2.  **Move**: Click and drag anywhere on the bar to move it.
 3.  **Resize**: Click and drag the bottom edge of the bar to resize it.
-4.  **Customize**: Hover over the bar to reveal the toolbar on the right:
-    *   **Color Circle**: Click to change the bar color.
-    *   **Slider**: Drag to adjust opacity.
-    *   **Refresh Icon**: Reset settings to default (Yellow, medium opacity).
-    *   **X Icon**: Close the bar.
+4.  **Customize**: Hover over the bar to reveal the toolbar:
+    *   **Color Circle**: Change bar color.
+    *   **Left Slider**: Adjust bar opacity.
+    *   **Play/Pause**: Start/Stop auto-scroll.
+    *   **Speed (1x)**: Cycle scroll speeds (0.25x, 0.5x, 1x, 2x, 3x).
+    *   **Eye Icon**: Toggle Focus Mode (dim background).
+    *   **Right Slider**: Adjust background dimness (only visible in Focus Mode).
+    *   **Reset**: Restore default settings.
+    *   **X**: Close the bar.
 
 ## Privacy
 
