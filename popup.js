@@ -53,9 +53,18 @@ document.getElementById('toggle-btn').addEventListener('click', async () => {
               console.error('Error injecting content script:', chrome.runtime.lastError.message);
               showError('errorMessage');
             } else {
-              console.log('Content script injected. Toggling bar...');
-              // Add a small delay to ensure script is ready
-              setTimeout(toggleBar, 100);
+              console.log('Content script injected.');
+              // Check if the bar will auto-show based on storage
+              chrome.storage.sync.get(['highlightBarVisible'], (result) => {
+                if (!result.highlightBarVisible) {
+                  // Only toggle if it WON'T auto-show
+                  console.log('Bar not visible in storage. Toggling to show...');
+                  setTimeout(toggleBar, 100);
+                } else {
+                  console.log('Bar visible in storage. Letting auto-init handle it.');
+                  window.close();
+                }
+              });
             }
           }
         );

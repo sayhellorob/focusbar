@@ -55,6 +55,17 @@ const STYLES = `
     color: #000;
   }
 
+  .focusbar-btn.close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+  }
+
   .focusbar-btn.close:hover {
     background: #ff4757;
     color: white;
@@ -133,13 +144,139 @@ function removeHighlightBar() {
 
     chrome.storage.sync.set({ highlightBarVisible: false, autoScrollActive: false });
   }
+
+  // Safety: Remove any zombie bars found in DOM
+  const existingBars = document.querySelectorAll('.focusbar-base');
+  existingBars.forEach(bar => bar.remove());
+}
+
+function showToast(message) {
+  let toast = document.getElementById('focusbar-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'focusbar-toast';
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(50, 50, 50, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 50px;
+      z-index: 2147483647;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+  }, 3000);
+}
+
+function findScrollTarget() {
+  // 1. Check if the main document is scrollable
+  if (document.documentElement.scrollHeight > window.innerHeight) {
+    return window;
+  }
+
+  // 2. Search for the largest visible scrollable element
+  // Common containers for apps like Google Docs, Gmail, etc.
+  const candidates = document.querySelectorAll('div, main, section, article, .kix-appview-editor');
+  let bestTarget = window; // Default to window if nothing better found
+  let maxArea = 0;
+
+  candidates.forEach(el => {
+    // Must have content larger than visible area
+    if (el.scrollHeight > el.clientHeight) {
+      const style = window.getComputedStyle(el);
+      // Must allow scrolling
+      if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+        const rect = el.getBoundingClientRect();
+        // Must be visible
+        if (rect.width > 0 && rect.height > 0) {
+          const area = rect.width * rect.height;
+          // Prefer larger areas (likely the main content)
+          if (area > maxArea) {
+            maxArea = area;
+            bestTarget = el;
+          }
+        }
+      }
+    }
+  });
+
+  return bestTarget;
 }
 
 function startAutoScroll(speed) {
   if (autoScrollFrameId) cancelAnimationFrame(autoScrollFrameId);
 
+  let accumulator = 0;
+  const scrollTarget = findScrollTarget();
+  let stuckFrames = 0;
+
+  console.log("Auto-scroll target:", scrollTarget === window ? "window" : scrollTarget);
+
+  if (scrollTarget !== window && scrollTarget.scrollHeight <= scrollTarget.clientHeight) {
+    showToast("No scrollable content found.");
+    return;
+  }
+
   function scroll() {
-    window.scrollBy(0, speed);
+    // Safety check: stop if bar is closed
+    if (!highlightBar) {
+      stopAutoScroll();
+      return;
+    }
+
+    accumulator += speed;
+    if (accumulator >= 1) {
+      const pixelsToScroll = Math.floor(accumulator);
+
+      const prevScrollTop = scrollTarget === window ? window.scrollY : scrollTarget.scrollTop;
+
+      if (scrollTarget === window) {
+        window.scrollBy(0, pixelsToScroll);
+      } else {
+        scrollTarget.scrollBy(0, pixelsToScroll);
+      }
+
+      const newScrollTop = scrollTarget === window ? window.scrollY : scrollTarget.scrollTop;
+
+      // Check if we are stuck (not moving but trying to)
+      if (Math.abs(newScrollTop - prevScrollTop) < 0.5) {
+        // Check if we are at the bottom
+        const maxScroll = scrollTarget === window
+          ? document.documentElement.scrollHeight - window.innerHeight
+          : scrollTarget.scrollHeight - scrollTarget.clientHeight;
+
+        if (newScrollTop < maxScroll - 1) {
+          stuckFrames++;
+          if (stuckFrames > 60) { // Stuck for ~1 second
+            showToast("Cannot scroll this page automatically.");
+            stopAutoScroll();
+            // Update UI button to pause state if possible, but we don't have direct access to the button instance here easily without querying.
+            // We can rely on the user to click pause or just let it stop.
+            return;
+          }
+        } else {
+          // At bottom, just stop
+          stuckFrames = 0;
+        }
+      } else {
+        stuckFrames = 0;
+      }
+
+      accumulator -= pixelsToScroll;
+    }
     autoScrollFrameId = requestAnimationFrame(scroll);
   }
 
@@ -173,6 +310,10 @@ function createHighlightBar() {
     autoScrollActive: false,
     scrollSpeed: 1
   }, (items) => {
+    // Cleanup: Remove any existing bars (zombies from previous script instances)
+    const existingBars = document.querySelectorAll('.focusbar-base');
+    existingBars.forEach(bar => bar.remove());
+
     // Create the highlight bar container
     highlightBar = document.createElement('div');
     highlightBar.classList.add('focusbar-base');
@@ -266,8 +407,15 @@ function createHighlightBar() {
 
     speedButton.addEventListener('click', () => {
       chrome.storage.sync.get(['scrollSpeed', 'autoScrollActive'], (result) => {
-        let newSpeed = (result.scrollSpeed || 1) + 1;
-        if (newSpeed > 3) newSpeed = 1;
+        let currentSpeed = result.scrollSpeed || 1;
+        let newSpeed;
+
+        // Cycle: 0.25 -> 0.5 -> 1 -> 2 -> 3 -> 0.25
+        if (currentSpeed === 0.25) newSpeed = 0.5;
+        else if (currentSpeed === 0.5) newSpeed = 1;
+        else if (currentSpeed === 1) newSpeed = 2;
+        else if (currentSpeed === 2) newSpeed = 3;
+        else newSpeed = 0.25;
 
         chrome.storage.sync.set({ scrollSpeed: newSpeed });
         speedButton.innerHTML = `<span style="font-size:10px; font-weight:bold;">${newSpeed}x</span>`;

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,45 +9,75 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 15px;
+      padding: 0;
+      /* Remove padding to allow edge-to-edge header */
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       width: 320px;
       height: 160px;
       box-sizing: border-box;
       background: linear-gradient(135deg, #f4f4f4, #e0e0e0);
-      border-radius: 10px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+      /* border-radius: 10px;  -- Remove border radius from body if it clips the header */
     }
 
     .title-container {
       width: 100%;
+      height: auto;
+      /* Let it take necessary height */
+      flex-grow: 1;
+      /* Take available space */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
       position: relative;
-      padding: 10px 20px; /* Remove left and right padding */
-      border-radius: 0px;
+      padding: 0;
+      border-radius: 0;
+      /* Square corners */
       background: linear-gradient(90deg, #ffeb3b, #ffcc00);
       box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-      cursor: pointer; /* Make the title-container look clickable */
-      transition: transform 1.9s ease, background 0.3s ease;
-      will-change: transform, background;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .title-container:active {
+      background: linear-gradient(90deg, #fdd835, #fbc02d);
+      /* Darker yellow on click */
+      transform: none;
+      /* Remove scale effect */
     }
 
     .title-container:hover {
       background: linear-gradient(90deg, #ffcc00, #ffeb3b);
-      transform: scale(1.25);
     }
 
     h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 28px;
       font-weight: bold;
       color: #333;
-      width: 100%; /* Use full width */
-      text-align: center; /* Center the text */
-      letter-spacing: 0.2em; /* Adjust letter spacing */
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #555;
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      /* Hidden by default */
+      transition: opacity 0.3s ease;
+      height: 15px;
+      /* Reserve space */
+    }
+
+    .title-container:hover .subtitle {
+      opacity: 0.8;
+      /* Show on hover */
     }
 
     .toggle-container {
@@ -89,7 +120,7 @@
       color: #333;
     }
 
-    .title-container:hover + .hover-label {
+    .title-container:hover+.hover-label {
       display: block;
     }
 
@@ -97,11 +128,16 @@
       position: absolute;
       bottom: 10px;
       right: 10px;
-      width: 24px; /* Increase size */
-      height: 24px; /* Increase size */
-      background: #fff; /* Add background color */
-      border-radius: 50%; /* Make it circular */
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+      width: 24px;
+      /* Increase size */
+      height: 24px;
+      /* Increase size */
+      background: #fff;
+      /* Add background color */
+      border-radius: 50%;
+      /* Make it circular */
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      /* Add shadow for better visibility */
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -111,7 +147,8 @@
     }
 
     .info-icon::before {
-      content: 'i'; /* Fallback text */
+      content: 'i';
+      /* Fallback text */
       font-weight: bold;
     }
 
@@ -134,20 +171,17 @@
     }
   </style>
 </head>
+
 <body>
-  <div class="title-container">
+  <div class="title-container" id="toggle-btn">
     <h1 data-i18n="toggleBar">FocusBar</h1>
-  </div>
-  
-  <div class="toggle-container">
-    <button id="toggle-btn">
-      <div class="toggle-icon"></div>
-      <span id="toggle-text">Toggle Bar</span>
-    </button>
+    <div class="subtitle">Click to Toggle</div>
   </div>
 
-  <a href="https://chromewebstore.google.com/detail/focusbar/gionniolflkjaefibllhfkifmbbjfcan" target="_blank" class="info-icon"></a>
+  <a href="https://chromewebstore.google.com/detail/focusbar/gionniolflkjaefibllhfkifmbbjfcan" target="_blank"
+    class="info-icon"></a>
   <div class="error-message" id="error-message" data-i18n="errorMessage">Bar only works on web pages.</div>
   <script src="popup.js"></script>
 </body>
+
 </html>
