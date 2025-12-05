@@ -220,7 +220,7 @@ function startAutoScroll(speed) {
   if (autoScrollFrameId) cancelAnimationFrame(autoScrollFrameId);
 
   let accumulator = 0;
-  const scrollTarget = findScrollTarget();
+  let scrollTarget = findScrollTarget();
   let stuckFrames = 0;
 
   console.log("Auto-scroll target:", scrollTarget === window ? "window" : scrollTarget);
@@ -260,11 +260,18 @@ function startAutoScroll(speed) {
 
         if (newScrollTop < maxScroll - 1) {
           stuckFrames++;
-          if (stuckFrames > 60) { // Stuck for ~1 second
+          if (stuckFrames > 150) { // Stuck for ~2.5 seconds (increased from 60)
+            // Attempt to re-find target before giving up
+            const newTarget = findScrollTarget();
+            if (newTarget !== scrollTarget) {
+              console.log("Auto-scroll stuck: switching target", newTarget);
+              scrollTarget = newTarget;
+              stuckFrames = 0;
+              return; // Retry next frame
+            }
+
             showToast("Cannot scroll this page automatically.");
             stopAutoScroll();
-            // Update UI button to pause state if possible, but we don't have direct access to the button instance here easily without querying.
-            // We can rely on the user to click pause or just let it stop.
             return;
           }
         } else {
