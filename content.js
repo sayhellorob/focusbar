@@ -221,6 +221,7 @@ function startAutoScroll(speed) {
 
   let accumulator = 0;
   let scrollTarget = findScrollTarget();
+  let lastScrollTop = -1;
   let stuckFrames = 0;
 
   console.log("Auto-scroll target:", scrollTarget === window ? "window" : scrollTarget);
@@ -240,34 +241,30 @@ function startAutoScroll(speed) {
     accumulator += speed;
     if (accumulator >= 1) {
       const pixelsToScroll = Math.floor(accumulator);
+      const currentScrollTop = scrollTarget === window ? window.scrollY : scrollTarget.scrollTop;
 
-      const prevScrollTop = scrollTarget === window ? window.scrollY : scrollTarget.scrollTop;
+      // Check if we moved since the last successful scroll attempt
+      if (lastScrollTop !== -1 && Math.abs(currentScrollTop - lastScrollTop) < 0.5) {
+        // We didn't move!
+        stuckFrames++;
+        // console.warn(`[FocusBar] Stuck detected! Pos: ${currentScrollTop}, StuckFrames: ${stuckFrames}`);
 
-      if (scrollTarget === window) {
-        window.scrollBy(0, pixelsToScroll);
-      } else {
-        scrollTarget.scrollBy(0, pixelsToScroll);
-      }
-
-      const newScrollTop = scrollTarget === window ? window.scrollY : scrollTarget.scrollTop;
-
-      // Check if we are stuck (not moving but trying to)
-      if (Math.abs(newScrollTop - prevScrollTop) < 0.5) {
         // Check if we are at the bottom
         const maxScroll = scrollTarget === window
           ? document.documentElement.scrollHeight - window.innerHeight
           : scrollTarget.scrollHeight - scrollTarget.clientHeight;
 
-        if (newScrollTop < maxScroll - 1) {
-          stuckFrames++;
-          if (stuckFrames > 150) { // Stuck for ~2.5 seconds (increased from 60)
-            // Attempt to re-find target before giving up
+        if (currentScrollTop < maxScroll - 1) {
+          if (stuckFrames > 150) { // ~2.5 seconds
+            console.error("[FocusBar] Stuck threshold reached.");
+
             const newTarget = findScrollTarget();
             if (newTarget !== scrollTarget) {
-              console.log("Auto-scroll stuck: switching target", newTarget);
+              console.log("[FocusBar] Switching target to:", newTarget);
               scrollTarget = newTarget;
+              lastScrollTop = -1; // Reset tracker
               stuckFrames = 0;
-              return; // Retry next frame
+              return;
             }
 
             showToast("Cannot scroll this page automatically.");
@@ -275,11 +272,18 @@ function startAutoScroll(speed) {
             return;
           }
         } else {
-          // At bottom, just stop
           stuckFrames = 0;
         }
       } else {
         stuckFrames = 0;
+      }
+
+      lastScrollTop = currentScrollTop;
+
+      if (scrollTarget === window) {
+        window.scrollBy(0, pixelsToScroll);
+      } else {
+        scrollTarget.scrollBy(0, pixelsToScroll);
       }
 
       accumulator -= pixelsToScroll;

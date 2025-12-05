@@ -48,6 +48,12 @@ FocusBar is a Chrome extension designed to help you focus on reading by highligh
     *   **Reset**: Restore default settings.
     *   **X**: Close the bar.
 
+## Version History
+
+*   **v1.3.2**: Fixed auto-scroll "stuck" detection for pages with smooth scrolling (e.g., CrowdStrike).
+*   **v1.3.0**: Added Focus Dim Level slider (0.1 - 1.0), improved Popup UI.
+*   **v1.2.1**: Fixed auto-scroll stopping on close, fixed double icon bug.
+
 ## Privacy
 
 FocusBar runs entirely on your device. It does not collect or transmit any personal data. Settings are synced using your Chrome account's built-in storage.
